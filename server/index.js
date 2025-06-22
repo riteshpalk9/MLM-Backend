@@ -22,7 +22,14 @@ const io = new Server(server, {
 });
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true, // required if you're using cookies or auth headers
+  })
+);
+app.options("*", cors()); // Handle preflight requests
+
 app.use(express.json());
 
 // Make io available in requests
@@ -42,6 +49,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", auth, userRoutes);
 app.use("/api/purchase", auth, purchaseRoutes);
 app.use("/api/report", auth, reportRoutes);
+app.get("/api/test", (req, res) => {
+  res.send("Server is up and running!");
+});
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
